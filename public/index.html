@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-time Polling App</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id="login">
+        <input id="login-username" placeholder="Enter your name">
+        <button id="login-button">Login</button>
+    </div>
+    <div id="app" style="display: none;">
+        <div>
+            <h1>Poll</h1>
+            <div id="poll-options"></div>
+        </div>
+        <div>
+            <h1>Chat</h1>
+            <div id="chat">
+                <div id="messages"></div>
+                <input id="message" placeholder="Type a message">
+                <button id="send">Send</button>
+                <p id="typing-indicator"></p>
+            </div>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket;
+        let username;
+
+        document.getElementById('login-button').onclick = function() {
+            username = document.getElementById('login-username').value;
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const sessionID = data.sessionID;
+                socket = io({ query: { sessionID } });
+
+                socket.on('connect', () => {
+                    document.getElementById('login').style.display = 'none';
+                    document.getElementById('app').style.display = 'block';
+                });
+
+                document.getElementById('send').onclick = function() {
+                    const message = document.getElementById('message').value;
+                    socket.emit('chat message', message);
+                    document.getElementById('message').value = '';
+                };
+
+                document.getElementById('message').oninput = function() {
+                    socket.emit('typing', username);
+                };
+
+                socket.on('initialData', (data) => {
+                    const pollDiv = document.getElementById('poll-options');
+                    pollDiv.innerHTML = ''; // Clear existing options
+                    data.pollData.options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.textContent = `${option} (Votes: ${data.pollData.votes[option]})`;
+                        button.onclick = () => {
+                            socket.emit('vote', option);
+                        };
+                        pollDiv.appendChild(button);
+                    });
+
+                    const messagesDiv = document.getElementById('messages');
+                    data.chatMessages.forEach(msg => {
+                        const item = document.createElement('div');
+                        item.textContent = `${msg.username}: ${msg.text}`;
+                        messagesDiv.appendChild(item);
+                    });
+                });
+
+                socket.on('vote', (data) => {
+                    const buttons = document.querySelectorAll('#poll-options button');
+                    buttons.forEach(button => {
+                        if (button.textContent.startsWith(data.option)) {
+                            button.textContent = `${data.option} (Votes: ${data.count})`;
+                        }
+                    });
+                });
+
+                socket.on('chat message', (msg) => {
+                    const messages = document.getElementById('messages');
+                    const item = document.createElement('div');
+                    item.textContent = `${msg.username}: ${msg.text}`;
+                    messages.appendChild(item);
+                    window.scrollTo(0, document.body.scrollHeight);
+                });
+
+                socket.on('typing', (username) => {
+                    document.getElementById('typing-indicator').textContent = `${username} is typing...`;
+                    setTimeout(() => {
+                        document.getElementById('typing-indicator').textContent = '';
+                    }, 2000);
+                });
+
+                socket.on('user connected', (username) => {
+                    const messages = document.getElementById('messages');
+                    const item = document.createElement('div');
+                    item.textContent = `${username} connected`;
+                    messages.appendChild(item);
+                });
+
+                socket.on('user disconnected', (username) => {
+                    const messages = document.getElementById('messages');
+                    const item = document.createElement('div');
+                    item.textContent = `${username} disconnected`;
+                    messages.appendChild(item);
+                });
+            });
+        };
+    </script>
+</body>
+</html>

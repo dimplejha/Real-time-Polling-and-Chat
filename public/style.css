@@ -1,0 +1,81 @@
+/* public/style.css */
+body {
+   font-family: Arial, sans-serif;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100vh;
+   margin: 0;
+   background-color: #f4f4f4;
+}
+
+#login, #app {
+   width: 500px;
+   background: white;
+   padding: 20px;
+   border-radius: 10px;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#login input, #app input, #app button, #login button {
+   width: calc(100% - 20px);
+   padding: 10px;
+   margin-top: 10px;
+   border: 1px solid #ddd;
+   border-radius: 5px;
+}
+
+#poll-options button {
+   display: block;
+   width: 100%;
+   margin: 5px 0;
+   padding: 10px;
+   background-color: #4CAF50;
+   color: white;
+   border: none;
+   cursor: pointer;
+   border-radius: 5px;
+}
+
+#poll-options button:hover {
+   background-color: #45a049;
+}
+
+#chat {
+   margin-top: 20px;
+}
+
+#messages {
+   height: 200px;
+   overflow-y: scroll;
+   border: 1px solid #ddd;
+   padding: 10px;
+   background: #fff;
+   margin-bottom: 10px;
+   border-radius: 5px;
+}
+
+#message {
+   width: calc(100% - 60px);
+   padding: 10px;
+   margin-top: 10px;
+}
+
+#send {
+   padding: 10px;
+   margin-top: 10px;
+   background-color: #007BFF;
+   color: white;
+   border: none;
+   cursor: pointer;
+   border-radius: 5px;
+}
+
+#send:hover {
+   background-color: #0056b3;
+}
+
+#typing-indicator {
+   font-style: italic;
+   color: #aaa;
+}
