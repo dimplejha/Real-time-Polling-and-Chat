@@ -1,6 +1,9 @@
 REAL TIME POLLING AND CHAT
 
-Assignment: 
+Command to run:-
+npm i
+Node server
+
 
 Real-time Polling Application with Chat Feature
 
