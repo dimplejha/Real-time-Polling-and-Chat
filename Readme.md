@@ -1,8 +1,8 @@
 REAL TIME POLLING AND CHAT
 
-Command to run:-
-npm i
-Node server
+Command to run:- <br>
+npm i<br>
+Node server<br>
 
 
 Real-time Polling Application with Chat Feature
